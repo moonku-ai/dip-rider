@@ -96,6 +96,12 @@ class DipRider:
 
         if self.stage == 0:
             # Flat: buy the dip, but only once it has started turning up.
+            # The 5-bar confirmation (close above the close 5 bars ago) is
+            # what keeps tranche 1 from firing mid-plunge: on the dev
+            # window, entries without it buy into falling prices and give
+            # the round-trip cost back on the next bar. The 200 bps
+            # max-slippage cap is ~30x the per-minute return stdev, so it
+            # only guards against a genuine gap, never a normal fill.
             if rsi < RSI_BUY and i >= CONFIRM_BARS and close > self.closes[i - CONFIRM_BARS]:
                 self.stage = 1
                 self.entry_close = close
